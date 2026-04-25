@@ -15,3 +15,6 @@ class DispensadorIngrediente(Dispensador):
     self.desativar()
 
     return quantidade_liberada
+
+  def get_ingrediente(self):
+    return self.__ingrediente

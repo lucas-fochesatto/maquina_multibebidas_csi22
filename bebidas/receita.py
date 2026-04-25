@@ -20,6 +20,9 @@ class Receita():
       return
     self.__ingredientes[ingrediente] = percentual
 
+  def get_ingredientes(self):
+    return self.__ingredientes
+
   def __str__(self):
     linhas = []
     for ingrediente, percentual in self.__ingredientes.items():

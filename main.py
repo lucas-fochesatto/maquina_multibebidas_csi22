@@ -1,3 +1,4 @@
+from bebidas.bebida_dosada import BebidaDosada
 from bebidas.ingrediente import Ingrediente
 from bebidas.receita import Receita
 from dispensadores.dispensador_ingrediente import DispensadorIngrediente
@@ -46,3 +47,27 @@ print("\n\n7. DispensadorIngrediente.acionar()")
 dispensador_cafe = DispensadorIngrediente(cafe)
 dispensador_cafe.acionar(70)
 print(f"Nível café após acionar: {cafe.nivel():.1f}%")
+
+print("\n\n8. BebidaDosada.preparar() — 3 cenários do doses.get()")
+dispensador_leite = DispensadorIngrediente(leite)
+cappuccino = BebidaDosada("Cappuccino", preco=8.0, receita=Receita({cafe: 100, leite: 70}))
+dispensadores = [dispensador_cafe, dispensador_leite]
+
+print("\n8.1 Sem doses (None) — usa padrão da receita (café 100%, leite 70%)")
+cappuccino.preparar(dispensadores)
+
+print("\n8.2 Override só do café — leite cai no padrão da receita")
+cappuccino.preparar(dispensadores, doses={cafe: 30})
+
+print("\n8.3 Override de todos os ingredientes")
+cappuccino.preparar(dispensadores, doses={cafe: 100, leite: 100})
+
+print("\n8.4 Estoque insuficiente — fluxo continua sem quebrar")
+doce = BebidaDosada("Doce", preco=5.0, receita=Receita({quase_vazio: 100, cafe: 50}))
+dispensador_acucar = DispensadorIngrediente(quase_vazio)
+doce.preparar([dispensador_acucar, dispensador_cafe])
+
+print("\n8.5 Receita com ingrediente sem dispensador correspondente")
+exotico = Ingrediente("Canela", quantidade=50, capacidade_maxima=100, porcao_padrao=5.0)
+mocha = BebidaDosada("Mocha", preco=9.0, receita=Receita({cafe: 70, exotico: 50}))
+mocha.preparar(dispensadores)  # falta dispensador de canela: deve pular sem quebrar
