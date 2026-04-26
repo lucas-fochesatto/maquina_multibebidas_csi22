@@ -61,6 +61,9 @@ class Estoque:
     self.__ingredientes[ingrediente.get_nome()] = ingrediente
     print(f"  [Estoque] Ingrediente '{ingrediente.get_nome()}' cadastrado.")
 
+  def get_ingredientes(self):
+    return self.__ingredientes
+
   def __str__(self):
     linhas = ["=== ESTOQUE ==="]
     linhas.append(f"Copos: {self.__copos}")

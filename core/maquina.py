@@ -8,19 +8,28 @@ from core.venda import Venda
 from core.gerenciador import Gerenciador
 
 class MaquinaCafeMB:
-  def __init__(self, estoque, gerenciador, dispensadores=None):
+  def __init__(self, estoque, gerenciador, dispensadores=None, bebidas_iniciais=None):
     self.__ligada = False
     self.__nivel_limpeza = 100
     self.__estoque : Estoque = estoque
     self.__gerenciador : Gerenciador = gerenciador
     self.__dispensadores = dispensadores if dispensadores is not None else []
-    self.__bebidas_disponiveis = []
+    self.__bebidas_disponiveis = list(bebidas_iniciais) if bebidas_iniciais is not None else []
 
     self.__admin_login = "admin"
     self.__admin_senha = "ita2026"
-  
+
   def _autenticar(self, login, senha):
     return login == self.__admin_login and senha == self.__admin_senha
+
+  def esta_ligada(self):
+    return self.__ligada
+
+  def get_bebidas_disponiveis(self):
+    return self.__bebidas_disponiveis
+
+  def listar_ingredientes(self):
+    return self.__estoque.get_ingredientes()
 
   def ligar(self):
     if self.__ligada:
@@ -140,6 +149,10 @@ class MaquinaCafeMB:
   @auth
   def atualizar_ingrediente(self, nome, quantidade):
     self.__estoque.reabastecer_ingrediente(nome, quantidade)
+
+  @auth
+  def atualizar_copos(self, quantidade):
+    self.__estoque.reabastecer_copos(quantidade)
 
   @auth
   def ver_relatorio(self):
