@@ -8,3 +8,9 @@ class Bebida(ABC):
   @abstractmethod
   def preparar(self, *args, **kwargs):
     pass
+
+  def get_nome(self):
+    return self.__nome
+
+  def get_preco(self):
+    return self.__preco

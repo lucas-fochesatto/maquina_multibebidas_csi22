@@ -33,5 +33,11 @@ class Ingrediente():
   def get_nome(self):
     return self.__nome
   
+  def get_quantidade(self):
+    return self.__quantidade
+  
+  def get_capacidade_maxima(self):
+    return self.__capacidade_maxima
+  
   def get_porcao_padrao(self):
     return self.__porcao_padrao
