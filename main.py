@@ -3,8 +3,14 @@ from bebidas.bebida_lata import BebidaLata
 from bebidas.ingrediente import Ingrediente
 from bebidas.receita import Receita
 from core.estoque import Estoque
+from core.gerenciador import Gerenciador
+from core.maquina import MaquinaCafeMB
+from core.venda import Venda
 from dispensadores.dispensador_ingrediente import DispensadorIngrediente
 from dispensadores.dispensador_lata import DispensadorLata
+from pagamentos.cartao_credito import CartaoCredito
+from pagamentos.cartao_debito import CartaoDebito
+from pagamentos.pix import Pix
 
 print("1. Criando ingredientes")
 cafe = Ingrediente("Café", quantidade=200, capacidade_maxima=500, porcao_padrao=10.0)
@@ -151,3 +157,175 @@ sukita.preparar(dispensadores_latas)
 
 print("\n\n14. Estado final do Estoque")
 print(estoque)
+
+print("\n\n15. Pagamentos — Pix, Cartão de Crédito, Cartão de Débito")
+
+print("\n15.1 Pix")
+pix_demo = Pix(8.0, "caixa@cafe.com")
+print(f"Valor: R$ {pix_demo.get_valor():.2f} | Chave: {pix_demo.get_chave_destino()}")
+print(f"Aprovado antes de processar? {pix_demo.get_aprovado()}")
+pix_demo.processar()
+print(f"Aprovado depois de processar? {pix_demo.get_aprovado()}")
+
+print("\n15.2 Cartão de Crédito")
+credito_demo = CartaoCredito(15.0, "1111-2222-3333-4444", "Lucas Fochesatto", "12/30", "123")
+print(f"Titular: {credito_demo.get_titular()} | Valor: R$ {credito_demo.get_valor():.2f}")
+credito_demo.processar()
+
+print("\n15.3 Cartão de Débito")
+debito_demo = CartaoDebito(12.0, "5555-6666-7777-8888", "Lucas Fochesatto", "12/30", "456")
+print(f"Titular: {debito_demo.get_titular()} | Valor: R$ {debito_demo.get_valor():.2f}")
+debito_demo.processar()
+
+
+print("\n\n16. Venda — registro de transação + comprovante")
+
+cafe_v = Ingrediente("Café", quantidade=200, capacidade_maxima=500, porcao_padrao=10.0)
+leite_v = Ingrediente("Leite", quantidade=300, capacidade_maxima=500, porcao_padrao=20.0)
+cappuccino_v = BebidaDosada("Cappuccino", preco=8.0, receita=Receita({cafe_v: 100, leite_v: 70}))
+
+print("\n16.1 Criar Venda (Venda.__init__ processa o pagamento)")
+venda_demo = Venda(cappuccino_v, Pix(8.0, "caixa@cafe.com"))
+print(f"Status: {venda_demo.get_status()}")
+print(f"Bebida vendida: {venda_demo.get_bebida().get_nome()}")
+print(f"Data: {venda_demo.get_data().strftime('%d/%m/%Y %H:%M:%S')}")
+
+print("\n16.2 Comprovante")
+print(venda_demo.comprovante())
+
+
+print("\n\n17. Gerenciador — relatório financeiro")
+gerenciador_demo = Gerenciador()
+
+print("\n17.1 Estado inicial")
+print(gerenciador_demo.relatorio())
+
+print("\n17.2 Registrando 2 dosadas + 1 lata")
+coca_v = BebidaLata("Coca-Cola", preco=6.0, marca="Coca", volume_ml=350)
+gerenciador_demo.registrar_venda(Venda(cappuccino_v, Pix(8.0, "caixa@cafe.com")))
+gerenciador_demo.registrar_venda(Venda(cappuccino_v, CartaoCredito(8.0, "1234", "Lucas", "12/30", "111")))
+gerenciador_demo.registrar_venda(Venda(coca_v, Pix(6.0, "caixa@cafe.com")))
+
+print("\n17.3 Relatório após 3 vendas")
+for chave, valor in gerenciador_demo.relatorio().items():
+    print(f"  {chave}: {valor}")
+print(f"  histórico: {len(gerenciador_demo.get_historico_vendas())} vendas")
+
+
+print("\n\n18. MaquinaCafeMB — ligar / desligar / limpar")
+
+estoque_m = Estoque()
+gerenciador_m = Gerenciador()
+cafe_m = Ingrediente("Café", quantidade=500, capacidade_maxima=1000, porcao_padrao=10.0)
+leite_m = Ingrediente("Leite", quantidade=500, capacidade_maxima=1000, porcao_padrao=20.0)
+estoque_m.cadastrar_ingrediente(cafe_m)
+estoque_m.cadastrar_ingrediente(leite_m)
+estoque_m.reabastecer_copos(10)
+
+dispensadores_m = [
+    DispensadorIngrediente(cafe_m),
+    DispensadorIngrediente(leite_m),
+    DispensadorLata("Coca-Cola", estoque_m),
+]
+
+maquina = MaquinaCafeMB(estoque_m, gerenciador_m, dispensadores_m)
+
+print("\n18.1 Tentar usar com máquina desligada")
+maquina.consultar_bebidas()
+maquina.limpar()
+
+print("\n18.2 Ligar (e tentar ligar de novo)")
+maquina.ligar()
+maquina.ligar()
+
+print("\n18.3 Desligar (e tentar desligar de novo) e religar")
+maquina.desligar()
+maquina.desligar()
+maquina.ligar()
+
+print("\n18.4 Limpar")
+maquina.limpar()
+
+
+print("\n\n19. MaquinaCafeMB — cardápio (autenticação obrigatória)")
+print("    >>> use Login: admin / Senha: ita2026 <<<")
+
+cappuccino_m = BebidaDosada("Cappuccino", preco=8.0, receita=Receita({cafe_m: 100, leite_m: 70}))
+coca_m = BebidaLata("Coca-Cola", preco=6.0, marca="Coca", volume_ml=350)
+estoque_m.reabastecer_latas("Coca-Cola", [
+    BebidaLata("Coca-Cola", preco=6.0, marca="Coca", volume_ml=350),
+    BebidaLata("Coca-Cola", preco=6.0, marca="Coca", volume_ml=350),
+])
+
+print("\n19.1 adicionar_bebida (Cappuccino) — vai pedir login/senha")
+maquina.adicionar_bebida(cappuccino_m)
+
+print("\n19.2 adicionar_bebida (Coca-Cola) — vai pedir login/senha")
+maquina.adicionar_bebida(coca_m)
+
+print("\n19.3 Cardápio atualizado")
+maquina.consultar_bebidas()
+
+
+print("\n\n20. fazer_bebida — sucesso e casos de erro")
+
+print("\n20.1 Dosada (cappuccino) — OK")
+maquina.fazer_bebida(cappuccino_m, None)
+
+print("\n20.2 Lata (coca) — OK")
+maquina.fazer_bebida(coca_m, None)
+
+print("\n20.3 Esvaziar estoque de Coca e tentar de novo")
+maquina.fazer_bebida(coca_m, None)
+print("\n  → próxima tentativa deve falhar:")
+maquina.fazer_bebida(coca_m, None)
+
+print("\n20.4 Esgotar copos e tentar dosada")
+while estoque_m.tem_copo():
+    estoque_m.consumir_copo()
+maquina.fazer_bebida(cappuccino_m, None)
+
+print("\n20.5 Reabastecer copos e forçar máquina suja")
+estoque_m.reabastecer_copos(5)
+maquina._MaquinaCafeMB__nivel_limpeza = 0  # gambi pontual: forçar nível 0 sem rodar 10 ciclos
+maquina.fazer_bebida(cappuccino_m, None)
+
+print("\n20.6 Limpar e tentar novamente")
+maquina.limpar()
+maquina.fazer_bebida(cappuccino_m, None)
+
+print("\n20.7 Máquina desligada")
+maquina.desligar()
+maquina.fazer_bebida(cappuccino_m, None)
+maquina.ligar()
+
+
+print("\n\n21. Venda end-to-end via MaquinaCafeMB")
+
+estoque_m.reabastecer_latas("Coca-Cola", [
+    BebidaLata("Coca-Cola", preco=6.0, marca="Coca", volume_ml=350),
+    BebidaLata("Coca-Cola", preco=6.0, marca="Coca", volume_ml=350),
+])
+
+print("\n21.1 Cappuccino com Pix")
+v = maquina.venda(cappuccino_m, Pix(8.0, "caixa@cafe.com"), None)
+print(f"  Retorno: status={v.get_status()}" if v else "  Retorno: None")
+
+print("\n21.2 Coca com Cartão de Crédito")
+v = maquina.venda(coca_m, CartaoCredito(6.0, "1111-2222-3333-4444", "Lucas", "12/30", "123"), None)
+print(f"  Retorno: status={v.get_status()}" if v else "  Retorno: None")
+
+print("\n21.3 Bebida fora do cardápio")
+expresso = BebidaDosada("Expresso", preco=5.0, receita=Receita({cafe_m: 100}))
+v = maquina.venda(expresso, Pix(5.0, "caixa@cafe.com"), None)
+print(f"  Retorno: {v}")
+
+
+print("\n\n22. Operações administrativas (autenticação)")
+print("    >>> use Login: admin / Senha: ita2026 <<<")
+
+print("\n22.1 ver_estoque_atual — vai pedir login/senha")
+maquina.ver_estoque_atual()
+
+print("\n22.2 ver_relatorio — vai pedir login/senha")
+maquina.ver_relatorio()

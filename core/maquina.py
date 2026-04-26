@@ -8,12 +8,12 @@ from core.venda import Venda
 from core.gerenciador import Gerenciador
 
 class MaquinaCafeMB:
-  def __init__(self, estoque, gerenciador):
+  def __init__(self, estoque, gerenciador, dispensadores=None):
     self.__ligada = False
     self.__nivel_limpeza = 100
     self.__estoque : Estoque = estoque
     self.__gerenciador : Gerenciador = gerenciador
-    self.__dispensadores = []
+    self.__dispensadores = dispensadores if dispensadores is not None else []
     self.__bebidas_disponiveis = []
 
     self.__admin_login = "admin"
