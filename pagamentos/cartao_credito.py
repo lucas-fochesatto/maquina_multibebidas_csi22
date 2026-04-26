@@ -1,4 +1,4 @@
-from pagamento import Pagamento
+from pagamentos.pagamento import Pagamento
 
 class CartaoCredito(Pagamento):
     def __init__(self, valor: float, numero: str, titular: str, validade: str, cvv: str ):
@@ -9,15 +9,20 @@ class CartaoCredito(Pagamento):
         self.__titular = titular
         self.__validade = validade
         self.__cvv = cvv
-        #getters:
-        def get_numero(self) -> str:
-            return self.__numero
-        def get_titular(self) -> str:
-            return self.__titular
-        def get_validade(self) -> str:
-            return self.__validade
-        def get_cvv(self) -> str:
-            return self.__cvv
+
+    #getters:
+    def get_numero(self) -> str:
+        return self.__numero
+
+    def get_titular(self) -> str:
+        return self.__titular
+
+    def get_validade(self) -> str:
+        return self.__validade
+
+    def get_cvv(self) -> str:
+        return self.__cvv
+
     #implementacao do metodo processar, que simula a verificacao do pagamento:
     def processar(self) -> bool:
         print("Processando pagamento com cartão de crédito...")

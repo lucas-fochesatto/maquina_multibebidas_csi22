@@ -1,4 +1,4 @@
-from pagamento import Pagamento
+from pagamentos.pagamento import Pagamento
 
 class Pix(Pagamento):
     def  __init__(self, valor: float, chave_destino: str):

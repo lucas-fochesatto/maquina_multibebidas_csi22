@@ -28,8 +28,8 @@ class Gerenciador:
             self.__saldo_total += valor_pago
 
             # Lógica para separar os totais por tipo (conforme UML)
-            from bebidas.bebida import Bebida_dosada 
-            if isinstance(venda.get_bebida(), Bebida_dosada):
+            from bebidas.bebida_dosada import BebidaDosada
+            if isinstance(venda.get_bebida(), BebidaDosada):
                 self.__total_vendido_dosadas += valor_pago
             else:
                 self.__total_vendido_latas += valor_pago

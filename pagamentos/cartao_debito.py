@@ -1,4 +1,4 @@
-from pagamento import Pagamento
+from pagamentos.pagamento import Pagamento
 #importamos da classe abstrata.
 class CartaoDebito(Pagamento):
     #iniciamos o construtor com seus argumentos especificos
@@ -9,15 +9,20 @@ class CartaoDebito(Pagamento):
         self.__titular = titular
         self.__validade = validade
         self.__cvv = cvv
-        #agora precisamos criar os getters para acessar esses atributos privados, caso seja necessario em algum momento do processamento do pagamento
-        def get_numero(self) -> str:
-            return self.__numero
-        def get_titular(self) -> str:
-            return self.__titular
-        def get_validade(self) -> str:
-            return self.__validade
-        def get_cvv(self) -> str:
-            return self.__cvv
+
+    #agora precisamos criar os getters para acessar esses atributos privados, caso seja necessario em algum momento do processamento do pagamento
+    def get_numero(self) -> str:
+        return self.__numero
+
+    def get_titular(self) -> str:
+        return self.__titular
+
+    def get_validade(self) -> str:
+        return self.__validade
+
+    def get_cvv(self) -> str:
+        return self.__cvv
+
     #o metodo processar aqui tem uma implementacao concreta, que simula a verificacao.
     #aqui implementamos o metodo processar, que era abstrato na classe Pagamento, e agora tem uma implementacao concreta para o CartaoDebito
     def processar(self) -> bool:
