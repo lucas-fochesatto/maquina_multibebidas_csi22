@@ -7,6 +7,9 @@ class BebidaDosada(Bebida):
     super().__init__(nome, preco)
     self.__receita = receita
 
+  def get_receita(self):
+    return self.__receita
+
   def preparar(self, dispensadores, doses = None):
     # doses: {ingrediente: percentual}
     # ex: {cafe: 100, leite: 70, acucar: 30}
